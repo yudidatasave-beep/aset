@@ -7,6 +7,7 @@ require __DIR__ . "/../includes/db.php";
 // ================= DROPDOWN =================
 $ruanganList   = $conn->query("SELECT id_ruangan, nama_ruangan FROM ruangan")->fetch_all(MYSQLI_ASSOC);
 $jenisasetList = $conn->query("SELECT id_jenis_aset, nama_jenis_aset FROM jenis_aset")->fetch_all(MYSQLI_ASSOC);
+$merekasetList = $conn->query("SELECT id_merek_aset, merek_aset,kode_merek FROM merek_aset")->fetch_all(MYSQLI_ASSOC);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
@@ -18,13 +19,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // ================= DATA FORM =================
     $kode_aset         = $_POST['kode_aset'];
     $nama_aset         = $_POST['nama_aset'];
-    $jenis_aset        = $_POST['jenis_aset'];
     $model             = $_POST['model'] ?? null;
     $nomor_kontrak     = $_POST['nomor_kontrak'] ?? null;
-    $merek             = $_POST['merek'] ?? null;
+	$id_merek_aset     = (int) $_POST['id_merek_aset'];
     $tipe              = $_POST['tipe'] ?? null;
     $nomor_seri        = $_POST['nomor_seri'] ?? null;
     $id_ruangan        = (int) $_POST['id_ruangan'];
+	$id_jenis_aset        = (int) $_POST['id_jenis_aset'];
     $tanggal_perolehan = $_POST['tanggal_perolehan'];
     $kondisi_alat      = $_POST['kondisi_alat'];
 
@@ -61,10 +62,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $sql = "INSERT INTO aset (
                 kode_aset,
                 nama_aset,
-                jenis_aset,
+                id_jenis_aset,
                 model,
                 nomor_kontrak,
-                merek,
+                id_merek_aset,
                 tipe,
                 nomor_seri,
                 id_ruangan,
@@ -83,13 +84,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // ================= BIND PARAM =================
     $stmt->bind_param(
-        "ssssssssissss",
+        "ssissississss",
         $kode_aset,
         $nama_aset,
-        $jenis_aset,
+        $id_jenis_aset,
         $model,
         $nomor_kontrak,
-        $merek,
+        $id_merek_aset,
         $tipe,
         $nomor_seri,
         $id_ruangan,
@@ -138,11 +139,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <!-- JENIS ASET -->
                     <div class="col-md-6 mb-3">
                         <label>Jenis Aset</label>
-                        <select name="jenis_aset" class="form-control" required>
+                        <select name="id_jenis_aset" class="form-control" required>
                             <option value="">-- Pilih Jenis Aset --</option>
                             <?php foreach ($jenisasetList as $r): ?>
                                 <option value="<?= $r['id_jenis_aset']; ?>">
                                     <?= htmlspecialchars($r['nama_jenis_aset']); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+					
+					<!-- MEREK -->
+                   <div class="col-md-6 mb-3">
+                        <label>Merek</label>
+                        <select name="id_merek_aset" class="form-control" required>
+                            <option value="">-- Pilih Jenis Aset --</option>
+                            <?php foreach ($merekasetList as $r): ?>
+                                <option value="<?= $r['id_merek_aset']; ?>">
+                                    <?= htmlspecialchars($r['merek_aset']); ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
@@ -160,11 +174,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <input type="text" name="nomor_kontrak" class="form-control">
                     </div>
 
-                    <!-- MEREK -->
-                    <div class="col-md-6 mb-3">
-                        <label>Merek</label>
-                        <input type="text" name="merek" class="form-control">
-                    </div>
+                    
 
                     <!-- TIPE -->
                     <div class="col-md-6 mb-3">
@@ -180,9 +190,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     <!-- RUANGAN -->
                     <div class="col-md-6 mb-3">
-                        <label>Ruangan</label>
+                        <label>Lokasi Aset</label>
                         <select name="id_ruangan" class="form-control" required>
-                            <option value="">-- Pilih Ruangan --</option>
+                            <option value="">-- Lokasi Aset --</option>
                             <?php foreach ($ruanganList as $r): ?>
                                 <option value="<?= $r['id_ruangan']; ?>">
                                     <?= htmlspecialchars($r['nama_ruangan']); ?>

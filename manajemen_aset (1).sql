@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.1.1
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 15, 2025 at 04:47 AM
--- Server version: 10.4.22-MariaDB
--- PHP Version: 7.3.33
+-- Generation Time: Jan 09, 2026 at 04:22 AM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -31,7 +31,7 @@ CREATE TABLE `aset` (
   `id_aset` int(11) NOT NULL,
   `kode_aset` varchar(50) NOT NULL,
   `nama_aset` varchar(100) NOT NULL,
-  `jenis_aset` enum('Medis','Non Medis') NOT NULL,
+  `jenis_aset` enum('Switch Unmanage','Switch Manage') NOT NULL,
   `merek` varchar(100) DEFAULT NULL,
   `tipe` varchar(100) DEFAULT NULL,
   `id_ruangan` int(11) NOT NULL,
@@ -52,17 +52,16 @@ CREATE TABLE `aset` (
   `kalibrasi` date DEFAULT NULL,
   `perusahaan` varchar(255) DEFAULT NULL,
   `kartu_kuning` enum('Ada','Tidak Ada') DEFAULT NULL,
-  `akl` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+  `akl` varchar(255) DEFAULT NULL,
+  `nomor_kontrak` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 --
 -- Dumping data for table `aset`
 --
 
-INSERT INTO `aset` (`id_aset`, `kode_aset`, `nama_aset`, `jenis_aset`, `merek`, `tipe`, `id_ruangan`, `tanggal_perolehan`, `nilai_perolehan`, `umur_ekonomis`, `kondisi_alat`, `kepemilikan`, `status_penyusutan`, `nomor_seri`, `image`, `stok`, `jumlah_nilai_perolehan`, `id_jenis_aset`, `spo`, `model`, `jenis_anggaran`, `kalibrasi`, `perusahaan`, `kartu_kuning`, `akl`) VALUES
-(1, 'RSCBBT/HD/AC/001', 'AC Bro', 'Non Medis', 'PHILIPS', 'A21', 1, '2025-07-25', '5000000.00', 0, '', 'RSUD Cibabat', '', '123456', 'img_1756181780_6c34b827.jpg', NULL, NULL, NULL, 'spo_1756187096_4eeca694.pdf', '', 'BTT', '0000-00-00', '', 'Ada', ''),
-(11, '00910', 'USG 12345', 'Medis', '0', 'SS', 1, '2025-07-31', '120000000.00', 1, '', '', '', '112', 'img_1756181760_8bc07e81.jpg', NULL, NULL, 1, 'spo_1756187083_49f08caa.pdf', '', 'BTT', '0000-00-00', '', 'Ada', ''),
-(12, 'RSCBBT-IP-001', 'Infusion Pump', 'Medis', '0', 'LF-700', 3, '2024-02-21', '24000000.00', 5, '', '', '', 'TEST123456', 'img_1756181791_e5bac9cb.jpg', NULL, NULL, 1, 'spo_1756187066_6463239a.pdf', '', 'BTT', '0000-00-00', '', 'Ada', '');
+INSERT INTO `aset` (`id_aset`, `kode_aset`, `nama_aset`, `jenis_aset`, `merek`, `tipe`, `id_ruangan`, `tanggal_perolehan`, `nilai_perolehan`, `umur_ekonomis`, `kondisi_alat`, `kepemilikan`, `status_penyusutan`, `nomor_seri`, `image`, `stok`, `jumlah_nilai_perolehan`, `id_jenis_aset`, `spo`, `model`, `jenis_anggaran`, `kalibrasi`, `perusahaan`, `kartu_kuning`, `akl`, `nomor_kontrak`) VALUES
+(13, '001', 'tes', '', 'ABC', '123', 1, '2026-01-08', 300000.00, 5, '', '', '', 'tes123', 'img_1767882969_be486105.png', NULL, NULL, NULL, '1767853057_A-DOC001-PROOF_OF_RECEIPT_OF_LETTER_IN_V1_1-fo-xsl_DN2025639026536248648766000.pdf', '123', 'BLUD', '0000-00-00', 'ssss', 'Ada', '1244', NULL);
 
 -- --------------------------------------------------------
 
@@ -76,7 +75,7 @@ CREATE TABLE `asisten` (
   `nip_asisten` varchar(50) NOT NULL,
   `id_user` int(255) DEFAULT NULL,
   `nip` int(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 --
 -- Dumping data for table `asisten`
@@ -98,7 +97,7 @@ CREATE TABLE `detail_pembelian_aset` (
   `nomor_seri` varchar(100) DEFAULT NULL,
   `id_ruangan` int(11) NOT NULL,
   `harga_perolehan` decimal(18,2) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -110,7 +109,7 @@ CREATE TABLE `gedung` (
   `id_gedung` int(11) NOT NULL,
   `nama_gedung` varchar(100) NOT NULL,
   `keterangan` text DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 --
 -- Dumping data for table `gedung`
@@ -128,16 +127,31 @@ INSERT INTO `gedung` (`id_gedung`, `nama_gedung`, `keterangan`) VALUES
 
 CREATE TABLE `jenis_aset` (
   `id_jenis_aset` int(11) NOT NULL,
-  `nama_jenis_aset` varchar(100) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+  `nama_jenis_aset` varchar(100) NOT NULL,
+  `kode_jenis_aset` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 --
 -- Dumping data for table `jenis_aset`
 --
 
-INSERT INTO `jenis_aset` (`id_jenis_aset`, `nama_jenis_aset`) VALUES
-(1, 'Medis'),
-(2, 'Non Medis');
+INSERT INTO `jenis_aset` (`id_jenis_aset`, `nama_jenis_aset`, `kode_jenis_aset`) VALUES
+(1, 'Switch Unmanage', 'SWU'),
+(2, 'Switch Manage', 'SWM'),
+(3, 'Rack Wallmount 8U', 'RW8U'),
+(4, 'UPS Server 10K 230V', 'UPSS10K'),
+(5, 'Kamera Vicon', 'CMVC'),
+(6, 'Sound Card 2in 2out', 'SNC2X2'),
+(7, 'Speaker Vicon', 'SPVC'),
+(8, 'Mikrofon Kondenser Studio', 'MKKD'),
+(9, 'Stand Mikrofon', 'STMK'),
+(10, 'Mixer 4 Channel', 'MX4C'),
+(11, 'LAN Tester Multifunction', 'LANTSML'),
+(12, 'Router Wireless', 'RTWR'),
+(13, 'SFP 1.25G 850nm 550m', 'SFP1GS'),
+(14, 'Server Rack', 'SVR'),
+(15, 'SFP 1.25G 20KM TX-1550nm', 'SFP1G20KM'),
+(16, 'Optical Splicer', 'OSPL');
 
 -- --------------------------------------------------------
 
@@ -168,18 +182,7 @@ CREATE TABLE `kegiatan` (
   `tanda_tangan_kepala_instalasi` text DEFAULT NULL,
   `waktu_selesai` datetime(6) DEFAULT NULL,
   `biaya_perawatan` int(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
-
---
--- Dumping data for table `kegiatan`
---
-
-INSERT INTO `kegiatan` (`id_kegiatan`, `id_aset`, `id_teknisi`, `id_asisten`, `jenis_kegiatan`, `uraian`, `tanggal_kegiatan`, `keluhan`, `tindakan`, `kesimpulan`, `id_user_ruangan`, `id_kepala_ipsrs`, `waktu_respon`, `image`, `waktu_laporan`, `nomor_lk`, `tanda_tangan_teknisi`, `tanda_tangan_asisten`, `tanda_tangan_kepala_ruangan`, `tanda_tangan_kepala_instalasi`, `waktu_selesai`, `biaya_perawatan`) VALUES
-(4, 1, 1, 1, 'Perbaikan', NULL, NULL, 'tes', 'tes', 'tes', '1', NULL, '2025-07-28 23:52:00.000000', '6887aac38e940_2.jpg', '2025-07-28 23:52:00.000000', '1234', NULL, NULL, NULL, NULL, '2025-07-28 23:52:00.000000', NULL),
-(5, 1, 1, 1, 'Perbaikan', NULL, NULL, 'tes', 'tes', 'tes', '1', NULL, '2025-07-29 00:10:00.000000', '6887af2658e52_foto.jpg', '2025-07-29 00:10:00.000000', '1234', NULL, NULL, NULL, NULL, '2025-07-29 00:10:00.000000', NULL),
-(6, 11, 1, 1, 'Perbaikan', NULL, NULL, 'Keluh Kesah', 'Teke', 'Mantap', '1', NULL, '0000-00-00 00:00:00.000000', '', '0000-00-00 00:00:00.000000', '110', NULL, NULL, NULL, NULL, '0000-00-00 00:00:00.000000', 0),
-(7, 11, 1, 1, 'Perbaikan', NULL, NULL, 'Nyeri Lambung', 'Patri', 'OK', '1', NULL, '2025-07-31 21:28:00.000000', 'kegiatan_688b7db8aecb1_Screenshot_2025-07-26_221126.png', '2025-07-31 15:28:00.000000', '008', NULL, NULL, NULL, NULL, '2025-07-31 21:28:00.000000', NULL),
-(8, 11, 1, 1, 'Perbaikan', NULL, NULL, 'Alat Mati ', 'Perbaikan', 'Dapat Diselesaikan', '1', NULL, '0000-00-00 00:00:00.000000', '', '0000-00-00 00:00:00.000000', '009', 'tanda_tangan_teknisi_689e04a04a5b7.png', 'tanda_tangan_asisten_689e04a04a972.png', 'tanda_tangan_kepala_ruangan_689e04a04ac8e.png', 'tanda_tangan_kepala_instalasi_689e04a04b040.png', '0000-00-00 00:00:00.000000', 0);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -192,7 +195,33 @@ CREATE TABLE `kepala_ipsrs` (
   `nama_kepala_ipsrs` varchar(255) DEFAULT NULL,
   `nip` varchar(255) DEFAULT NULL,
   `id_user` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `merek_aset`
+--
+
+CREATE TABLE `merek_aset` (
+  `id_merek_aset` int(10) NOT NULL,
+  `merek_aset` varchar(255) DEFAULT NULL,
+  `kode_merek` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `merek_aset`
+--
+
+INSERT INTO `merek_aset` (`id_merek_aset`, `merek_aset`, `kode_merek`) VALUES
+(1, 'TP-Link', 'TP'),
+(2, 'D-Link', 'DL'),
+(3, 'Indorak', 'IDR'),
+(4, 'APC', 'APC'),
+(5, 'Logitech', 'LOG'),
+(6, 'Scarlett', 'SCR'),
+(7, 'Tenveo', 'TNV'),
+(8, 'Taffware', 'TFW');
 
 -- --------------------------------------------------------
 
@@ -209,7 +238,7 @@ CREATE TABLE `mutasi_aset` (
   `tanggal_mutasi` date NOT NULL,
   `alasan_mutasi` text DEFAULT NULL,
   `id_user_mutasi` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -225,7 +254,7 @@ CREATE TABLE `pembelian_aset` (
   `tanggal_jatuh_tempo` date DEFAULT NULL,
   `total_pembayaran` decimal(18,2) DEFAULT 0.00,
   `keterangan` text DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -239,7 +268,7 @@ CREATE TABLE `pengeluaran_aset` (
   `tujuan_pengeluaran` varchar(255) DEFAULT NULL,
   `keterangan` text DEFAULT NULL,
   `created_at` datetime DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -253,7 +282,7 @@ CREATE TABLE `pengeluaran_aset_detail` (
   `id_aset` int(11) NOT NULL,
   `id_ruangan` int(11) NOT NULL,
   `jumlah` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -266,7 +295,7 @@ CREATE TABLE `ruangan` (
   `id_gedung` int(11) NOT NULL,
   `nama_ruangan` varchar(100) NOT NULL,
   `keterangan` varchar(100) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 --
 -- Dumping data for table `ruangan`
@@ -289,7 +318,7 @@ CREATE TABLE `stok_aset` (
   `jumlah` int(11) DEFAULT 0,
   `harga_satuan` decimal(15,2) DEFAULT 0.00,
   `last_updated` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
 
@@ -304,7 +333,7 @@ CREATE TABLE `supplier` (
   `kontak` varchar(100) DEFAULT NULL,
   `email` varchar(100) DEFAULT NULL,
   `keterangan` text DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 --
 -- Dumping data for table `supplier`
@@ -324,7 +353,7 @@ CREATE TABLE `teknisi` (
   `id_user` int(11) DEFAULT NULL,
   `nama_teknisi` varchar(100) DEFAULT NULL,
   `nip` varchar(50) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 --
 -- Dumping data for table `teknisi`
@@ -346,7 +375,7 @@ CREATE TABLE `user` (
   `password` varchar(255) NOT NULL,
   `role` enum('admin','teknisi','unit') DEFAULT 'unit',
   `status` enum('aktif','nonaktif') DEFAULT 'aktif'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 --
 -- Dumping data for table `user`
@@ -366,7 +395,7 @@ CREATE TABLE `user_ruangan` (
   `id_user_ruangan` int(255) NOT NULL,
   `nama_user_ruangan` varchar(255) DEFAULT NULL,
   `nip` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 --
 -- Dumping data for table `user_ruangan`
@@ -425,6 +454,12 @@ ALTER TABLE `kegiatan`
   ADD KEY `id_aset` (`id_aset`) USING BTREE,
   ADD KEY `id_teknisi` (`id_teknisi`) USING BTREE,
   ADD KEY `id_asisten` (`id_asisten`) USING BTREE;
+
+--
+-- Indexes for table `merek_aset`
+--
+ALTER TABLE `merek_aset`
+  ADD PRIMARY KEY (`id_merek_aset`);
 
 --
 -- Indexes for table `mutasi_aset`
@@ -506,7 +541,7 @@ ALTER TABLE `user_ruangan`
 -- AUTO_INCREMENT for table `aset`
 --
 ALTER TABLE `aset`
-  MODIFY `id_aset` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id_aset` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `asisten`
@@ -530,13 +565,19 @@ ALTER TABLE `gedung`
 -- AUTO_INCREMENT for table `jenis_aset`
 --
 ALTER TABLE `jenis_aset`
-  MODIFY `id_jenis_aset` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_jenis_aset` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `kegiatan`
 --
 ALTER TABLE `kegiatan`
   MODIFY `id_kegiatan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT for table `merek_aset`
+--
+ALTER TABLE `merek_aset`
+  MODIFY `id_merek_aset` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `mutasi_aset`

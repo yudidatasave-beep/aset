@@ -42,10 +42,11 @@ $totalPages = ceil($totalData / $limit);
 
 // Ambil data aset
 $sql = "
-SELECT a.*, j.nama_jenis_aset, r.nama_ruangan
+SELECT a.*, j.nama_jenis_aset, r.nama_ruangan, m.merek_aset
 FROM aset a
 LEFT JOIN jenis_aset j ON a.id_jenis_aset = j.id_jenis_aset
 LEFT JOIN ruangan r ON a.id_ruangan = r.id_ruangan
+LEFT JOIN merek_aset m ON a.id_merek_aset = m.id_merek_aset
 $where
 ORDER BY a.id_aset DESC
 LIMIT $start, $limit
@@ -102,7 +103,7 @@ $result = $stmt->get_result();
                 <th>Jenis Aset</th>
                 <th>Merek</th>
                 <th>Tipe</th>
-                <th>Ruangan</th>
+                <th>Lokasi Aset</th>
                 <th>Aksi</th>
             </tr>
         </thead>
@@ -115,8 +116,8 @@ $result = $stmt->get_result();
                         <td>
                             <?php
                             $imageName = $aset['image'] ?? '';
-                            $imageURL = '/samcibabat/uploads/' . $imageName;
-                            $imagePath = $_SERVER['DOCUMENT_ROOT'] . '/samcibabat/uploads/' . $imageName;
+                            $imageURL = '/aset/uploads/' . $imageName;
+                            $imagePath = $_SERVER['DOCUMENT_ROOT'] . '/aset/uploads/' . $imageName;
 
                             if (!empty($imageName) && file_exists($imagePath)) {
                                 echo "<img src='$imageURL' class='img-thumbnail' style='width: 80px; height: auto;' alt='Gambar Aset'>";
@@ -128,7 +129,7 @@ $result = $stmt->get_result();
                         <td><?= htmlspecialchars($aset['kode_aset']) ?></td>
                         <td><?= htmlspecialchars($aset['nama_aset']) ?></td>
                         <td><?= htmlspecialchars($aset['nama_jenis_aset']) ?></td>
-                        <td><?= htmlspecialchars($aset['merek']) ?></td>
+                        <td><?= htmlspecialchars($aset['merek_aset']) ?></td>
                         <td><?= htmlspecialchars($aset['tipe']) ?></td>
                         <td><?= htmlspecialchars($aset['nama_ruangan']) ?></td>
                         <td>
