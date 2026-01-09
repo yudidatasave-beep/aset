@@ -79,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <div class="login-container">
     <div class="login-image">
-        <img src="assets/logo3.png" alt="Logo Rumah Sakit">
+        <img src="assets/logo3.png" alt="Pemerintah Kota Cimahi">
     </div>
     <div class="login-form">
         <h3 class="mb-4">Manajemen Pemeliharaan Aset </h3>
