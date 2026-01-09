@@ -7,27 +7,63 @@ require __DIR__ . "/../includes/db.php";
 // ================= DROPDOWN =================
 $ruanganList   = $conn->query("SELECT id_ruangan, nama_ruangan FROM ruangan")->fetch_all(MYSQLI_ASSOC);
 $jenisasetList = $conn->query("SELECT id_jenis_aset, nama_jenis_aset FROM jenis_aset")->fetch_all(MYSQLI_ASSOC);
-$merekasetList = $conn->query("SELECT id_merek_aset, merek_aset,kode_merek FROM merek_aset")->fetch_all(MYSQLI_ASSOC);
+$merekasetList = $conn->query("SELECT id_merek_aset, merek_aset, kode_merek FROM merek_aset")->fetch_all(MYSQLI_ASSOC);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // ================= VALIDASI =================
-    if (empty($_POST['kode_aset']) || empty($_POST['nama_aset'])) {
-        die("Kode aset dan nama aset wajib diisi");
+    if (empty($_POST['nama_aset'])) {
+        die("Nama aset wajib diisi");
     }
 
     // ================= DATA FORM =================
-    $kode_aset         = $_POST['kode_aset'];
     $nama_aset         = $_POST['nama_aset'];
     $model             = $_POST['model'] ?? null;
     $nomor_kontrak     = $_POST['nomor_kontrak'] ?? null;
-	$id_merek_aset     = (int) $_POST['id_merek_aset'];
+    $id_merek_aset     = (int) $_POST['id_merek_aset'];
     $tipe              = $_POST['tipe'] ?? null;
     $nomor_seri        = $_POST['nomor_seri'] ?? null;
     $id_ruangan        = (int) $_POST['id_ruangan'];
-	$id_jenis_aset        = (int) $_POST['id_jenis_aset'];
+    $id_jenis_aset     = (int) $_POST['id_jenis_aset'];
     $tanggal_perolehan = $_POST['tanggal_perolehan'];
     $kondisi_alat      = $_POST['kondisi_alat'];
+
+    // ================= AUTO GENERATE KODE ASET =================
+    $tahun = date('Y', strtotime($tanggal_perolehan));
+
+    // Ambil kode jenis
+    $qJenis = $conn->prepare("SELECT kode_jenis_aset FROM jenis_aset WHERE id_jenis_aset=?");
+    $qJenis->bind_param("i", $id_jenis_aset);
+    $qJenis->execute();
+    $qJenis->bind_result($kode_jenis);
+    $qJenis->fetch();
+    $qJenis->close();
+
+    // Ambil kode merek
+    $qMerek = $conn->prepare("SELECT kode_merek FROM merek_aset WHERE id_merek_aset=?");
+    $qMerek->bind_param("i", $id_merek_aset);
+    $qMerek->execute();
+    $qMerek->bind_result($kode_merek);
+    $qMerek->fetch();
+    $qMerek->close();
+
+    // Hitung nomor urut
+    $qUrut = $conn->prepare("
+        SELECT COUNT(*) 
+        FROM aset 
+        WHERE id_jenis_aset=? 
+          AND id_merek_aset=? 
+          AND YEAR(tanggal_perolehan)=?
+    ");
+    $qUrut->bind_param("iii", $id_jenis_aset, $id_merek_aset, $tahun);
+    $qUrut->execute();
+    $qUrut->bind_result($urut);
+    $qUrut->fetch();
+    $qUrut->close();
+
+    $nomor_urut = $urut + 1;
+
+    $kode_aset = "{$kode_jenis}_{$kode_merek}_{$tahun}_{$nomor_urut}";
 
     // ================= UPLOAD IMAGE =================
     $image = null;
@@ -40,9 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         $image = time() . "_" . uniqid() . "." . $ext;
-        if (!move_uploaded_file($_FILES['image']['tmp_name'], __DIR__ . "/../uploads/" . $image)) {
-            die("Upload gambar gagal");
-        }
+        move_uploaded_file($_FILES['image']['tmp_name'], __DIR__ . "/../uploads/" . $image);
     }
 
     // ================= UPLOAD SPO =================
@@ -51,38 +85,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($_FILES['spo']['type'] !== "application/pdf") {
             die("File SPO harus PDF");
         }
-
         $spo = time() . "_" . basename($_FILES['spo']['name']);
-        if (!move_uploaded_file($_FILES['spo']['tmp_name'], __DIR__ . "/../uploads/" . $spo)) {
-            die("Upload SPO gagal");
-        }
+        move_uploaded_file($_FILES['spo']['tmp_name'], __DIR__ . "/../uploads/" . $spo);
     }
 
-    // ================= SQL =================
+    // ================= INSERT =================
     $sql = "INSERT INTO aset (
-                kode_aset,
-                nama_aset,
-                id_jenis_aset,
-                model,
-                nomor_kontrak,
-                id_merek_aset,
-                tipe,
-                nomor_seri,
-                id_ruangan,
-                tanggal_perolehan,
-                kondisi_alat,
-                image,
-                spo
+                kode_aset, nama_aset, id_jenis_aset, model,
+                nomor_kontrak, id_merek_aset, tipe, nomor_seri,
+                id_ruangan, tanggal_perolehan, kondisi_alat, image, spo
             ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
     $stmt = $conn->prepare($sql);
-
-    // 🔴 PENTING: cegah fatal error
-    if (!$stmt) {
-        die("Prepare gagal: " . $conn->error);
-    }
-
-    // ================= BIND PARAM =================
     $stmt->bind_param(
         "ssissississss",
         $kode_aset,
@@ -100,17 +114,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $spo
     );
 
-    // ================= EXECUTE =================
     if ($stmt->execute()) {
-        echo "<script>
-                alert('Aset berhasil ditambahkan');
-                location.href='index.php?page=aset';
-              </script>";
+        echo "<script>alert('Aset berhasil ditambahkan\\nKode: $kode_aset');location.href='index.php?page=aset';</script>";
     } else {
-        echo "Execute error: " . $stmt->error;
+        echo $stmt->error;
     }
 }
 ?>
+
 
 
 <div class="container mt-4">
@@ -123,12 +134,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <form method="POST" enctype="multipart/form-data">
 
                 <div class="row">
-
-                    <!-- KODE ASET -->
-                    <div class="col-md-6 mb-3">
-                        <label>Kode Aset</label>
-                        <input type="text" name="kode_aset" class="form-control" required>
-                    </div>
 
                     <!-- NAMA ASET -->
                     <div class="col-md-6 mb-3">
@@ -148,12 +153,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <?php endforeach; ?>
                         </select>
                     </div>
-					
-					<!-- MEREK -->
-                   <div class="col-md-6 mb-3">
+
+                    <!-- MEREK -->
+                    <div class="col-md-6 mb-3">
                         <label>Merek</label>
                         <select name="id_merek_aset" class="form-control" required>
-                            <option value="">-- Pilih Jenis Aset --</option>
+                            <option value="">-- Pilih Merek --</option>
                             <?php foreach ($merekasetList as $r): ?>
                                 <option value="<?= $r['id_merek_aset']; ?>">
                                     <?= htmlspecialchars($r['merek_aset']); ?>
@@ -173,8 +178,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <label>Nomor Kontrak</label>
                         <input type="text" name="nomor_kontrak" class="form-control">
                     </div>
-
-                    
 
                     <!-- TIPE -->
                     <div class="col-md-6 mb-3">
@@ -227,12 +230,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <!-- UPLOAD SPO -->
                     <div class="col-md-6 mb-3">
                         <label>Upload SPO (PDF &lt; 1MB)</label>
-                        <input type="file" name="spo" class="form-control" accept="application/pdf">
+                        <input type="file" name="spo" class="form-control" 
                     </div>
 
                 </div>
 
-                <!-- SUBMIT -->
                 <div class="text-end">
                     <button type="submit" class="btn btn-primary">
                         <i class="fa fa-save"></i> Simpan
