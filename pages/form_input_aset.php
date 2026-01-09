@@ -193,7 +193,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     <!-- TANGGAL PEROLEHAN -->
                     <div class="col-md-6 mb-3">
-                        <label>Tanggal Perolehan</label>
+                        <label>Tanggal Tahun Anggaran</label>
                         <input type="date" name="tanggal_perolehan" class="form-control" required>
                     </div>
 
