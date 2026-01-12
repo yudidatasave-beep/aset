@@ -14,6 +14,7 @@ $page = $_GET['page'] ?? 'dashboard';
 <!DOCTYPE html>
 <html lang="id">
 <head>
+	<link rel="icon" type="image/x-icon" href="assets/logo3.png">
     <meta charset="UTF-8">
     <title>Manajemen Aset</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -99,7 +100,7 @@ $page = $_GET['page'] ?? 'dashboard';
 <!-- Sidebar -->
 <div class="sidebar" id="sidebar">
     <div class="brand">
-        <img src="assets/logo.png" alt="Logo" height="30">
+        <img src="assets/logo3.png" alt="Logo" height="30">
         Manajemen Aset
     </div>
 
