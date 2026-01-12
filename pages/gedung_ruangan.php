@@ -14,6 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt = $conn->prepare("INSERT INTO gedung (nama_gedung, keterangan) VALUES (?, ?)");
         $stmt->bind_param("ss", $nama, $keterangan);
     }
+
     $stmt->execute();
     header("Location: index.php?page=gedung_ruangan");
     exit;
@@ -32,6 +33,7 @@ if (isset($_GET['hapus'])) {
 // Ambil data
 $gedung = $conn->query("SELECT * FROM gedung ORDER BY nama_gedung ASC");
 ?>
+
 
 <div class="container">
     <h4 class="mb-3"><i class="bi bi-building"></i> Data Gedung</h4>
